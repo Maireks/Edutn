@@ -1,0 +1,99 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── دوال المساعدة ───────────────────────────────────────
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+             exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function getRole() {
+      return get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role;
+    }
+
+    function isEditor() {
+      return isAdmin() && getRole() in ['editor', 'admin', 'superAdmin'];
+    }
+
+    function isAdminRole() {
+      return isAdmin() && getRole() in ['admin', 'superAdmin'];
+    }
+
+    function isSuperAdmin() {
+      return isAdmin() && getRole() == 'superAdmin';
+    }
+
+    // ─── LEVELS ──────────────────────────────────────────────
+    match /levels/{levelId} {
+      allow read:             if true;
+      allow create, update:   if isAdminRole();
+      allow delete:           if isSuperAdmin();
+    }
+
+    // ─── SUBJECTS ────────────────────────────────────────────
+    match /subjects/{subjectId} {
+      allow read:             if true;
+      allow create, update:   if isAdminRole();
+      allow delete:           if isSuperAdmin();
+    }
+
+    // ─── LESSONS ─────────────────────────────────────────────
+    match /lessons/{lessonId} {
+      allow read:             if true;
+      allow create, update:   if isEditor();
+      allow delete:           if isAdminRole();
+    }
+
+    // ─── RATINGS ─────────────────────────────────────────────
+    // الطلاب يقيّمون بدون حساب، الأدمن يحذف فقط
+    match /ratings/{ratingId} {
+      allow read:             if true;
+      allow create:           if true;
+      allow update:           if true;   // deviceId-based update
+      allow delete:           if isAdminRole();
+    }
+
+    // ─── COMMENTS ────────────────────────────────────────────
+    // الطلاب يكتبون، الأدمن يعتمد ويحذف
+    match /comments/{commentId} {
+      allow read:             if true;
+      allow create:           if true;
+      allow update:           if isAdminRole();
+      allow delete:           if isAdminRole();
+    }
+
+    // ─── REPORTS ─────────────────────────────────────────────
+    // الطلاب يرسلون، الأدمن يدير
+    match /reports/{reportId} {
+      allow create:                        if true;
+      allow read, update, delete:          if isAdminRole();
+    }
+
+    // ─── ADMINS ──────────────────────────────────────────────
+    // كل أدمن يقرأ بياناته فقط، السوبر أدمن يدير الكل
+    match /admins/{adminId} {
+      allow read:   if isSignedIn() && request.auth.uid == adminId;
+      allow create: if isSuperAdmin();
+      allow update: if isSuperAdmin();
+      allow delete: if isSuperAdmin();
+    }
+
+    // ─── NOTIFICATIONS ────────────────────────────────────────
+    match /notifications/{notifId} {
+      allow read:   if true;
+      allow create: if isEditor();
+      allow update: if isAdminRole();
+      allow delete: if isAdminRole();
+    }
+
+    // ─── حظر كل ما عدا ذلك ──────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

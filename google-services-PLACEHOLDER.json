@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "904576043996",
+    "project_id": "edutn-f4c65",
+    "storage_bucket": "edutn-f4c65.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:904576043996:android:1bcdf92f19ab85ec261d19",
+        "android_client_info": {
+          "package_name": "com.edtn.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5FFM0p7FbFVh5TBxq9sHk9WbxpnLZJh8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}sion": "1"
+}

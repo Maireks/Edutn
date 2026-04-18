@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- ⚠️ احذف هذا الملف وضع GoogleService-Info.plist الحقيقي من Firebase Console -->
+  <key>BUNDLE_ID</key>        <string>com.edtn.app</string>
+  <key>PROJECT_ID</key>       <string>edtn-app</string>
+  <key>STORAGE_BUCKET</key>   <string>edtn-app.appspot.com</string>
+</dict>
+</plist>
